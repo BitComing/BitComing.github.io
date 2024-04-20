@@ -2,7 +2,25 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://bitcoming.github.io/2024/04/19/%E9%80%9F%E6%88%90SpringBoot/</loc>
+    <loc>https://bitcoming.github.io/2024/04/20/%E9%9F%A9%E5%9B%BD%E8%8A%82%E7%9B%AE%E7%94%9F%E6%80%81/</loc>
+    
+    <lastmod>2024-04-20</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://bitcoming.github.io/2024/04/20/F1%E4%B8%8A%E6%B5%B7%E7%AB%99/</loc>
+    
+    <lastmod>2024-04-20</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://bitcoming.github.io/2024/04/20/Springboot+redis/</loc>
     
     <lastmod>2024-04-20</lastmod>
     
@@ -13,7 +31,16 @@
   <url>
     <loc>https://bitcoming.github.io/2024/04/18/%E8%B6%B3%E7%90%83%E7%BB%9F%E8%AE%A1%E6%95%B0%E6%8D%AE/</loc>
     
-    <lastmod>2024-04-17</lastmod>
+    <lastmod>2024-04-20</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://bitcoming.github.io/2024/04/19/%E9%80%9F%E6%88%90SpringBoot/</loc>
+    
+    <lastmod>2024-04-20</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -125,6 +152,13 @@
   
   <url>
     <loc>https://bitcoming.github.io/tags/%E8%B6%B3%E7%90%83/</loc>
+    <lastmod>2024-04-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://bitcoming.github.io/tags/Java/</loc>
     <lastmod>2024-04-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
