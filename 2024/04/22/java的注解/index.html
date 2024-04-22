@@ -19,25 +19,28 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"bitcoming.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.19.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="技术带来进步">
-<meta property="og:type" content="website">
-<meta property="og:title" content="BitComing&#39;s Blog">
-<meta property="og:url" content="https://bitcoming.github.io/tags/Java/index.html">
+    <meta name="description" content="参考链接：https:&#x2F;&#x2F;zhuanlan.zhihu.com&#x2F;p&#x2F;37701743 简单解释“注解”在接口、类、属性、方法上，写一个标签。 写了标签之后，开发者可以通过标签，调用一些信息。 比如：我给cat、dog类打上标签“@animals”">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java的注解">
+<meta property="og:url" content="https://bitcoming.github.io/2024/04/22/java%E7%9A%84%E6%B3%A8%E8%A7%A3/index.html">
 <meta property="og:site_name" content="BitComing&#39;s Blog">
-<meta property="og:description" content="技术带来进步">
+<meta property="og:description" content="参考链接：https:&#x2F;&#x2F;zhuanlan.zhihu.com&#x2F;p&#x2F;37701743 简单解释“注解”在接口、类、属性、方法上，写一个标签。 写了标签之后，开发者可以通过标签，调用一些信息。 比如：我给cat、dog类打上标签“@animals”">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-04-22T14:00:00.000Z">
+<meta property="article:modified_time" content="2024-04-22T14:38:12.664Z">
 <meta property="article:author" content="BitComing">
+<meta property="article:tag" content="Java">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="https://bitcoming.github.io/tags/Java/">
+<link rel="canonical" href="https://bitcoming.github.io/2024/04/22/java%E7%9A%84%E6%B3%A8%E8%A7%A3/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":false,"lang":"zh-CN","comments":"","permalink":"","path":"tags/Java/index.html","title":""}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://bitcoming.github.io/2024/04/22/java%E7%9A%84%E6%B3%A8%E8%A7%A3/","path":"2024/04/22/java的注解/","title":"Java的注解"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>标签: Java | BitComing's Blog</title>
+<title>Java的注解 | BitComing's Blog</title>
   
 
 
@@ -96,7 +99,7 @@
   
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -109,6 +112,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E8%A7%A3%E9%87%8A%E2%80%9C%E6%B3%A8%E8%A7%A3%E2%80%9D"><span class="nav-number">1.</span> <span class="nav-text">简单解释“注解”</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E5%99%A8%E6%98%AF%E5%A6%82%E4%BD%95%E7%90%86%E8%A7%A3%E8%A2%AB%E6%B3%A8%E8%A7%A3%E7%9A%84%E4%B8%9C%E4%B8%9C%EF%BC%88%E6%8E%A5%E5%8F%A3%E3%80%81%E7%B1%BB%E3%80%81%E5%B1%9E%E6%80%A7%E3%80%81%E6%96%B9%E6%B3%95%EF%BC%89%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">编译器是如何理解被注解的东东（接口、类、属性、方法）？</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -148,110 +152,103 @@
 
     </div>
 
-    <div class="main-inner tag posts-collapse">
+    <div class="main-inner post posts-expand">
 
 
   
+
+
+<div class="post-block">
   
   
-  <div class="post-block">
-    <div class="post-content">
-      <div class="collection-title">
-        <h1 class="collection-header">Java
-          <small>标签</small>
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://bitcoming.github.io/2024/04/22/java%E7%9A%84%E6%B3%A8%E8%A7%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="BitComing">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BitComing's Blog">
+      <meta itemprop="description" content="技术带来进步">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Java的注解 | BitComing's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java的注解
         </h1>
-      </div>
 
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
       
-    <div class="collection-year">
-      <span class="collection-header">2024</span>
+
+      <time title="创建时间：2024-04-22 22:00:00 / 修改时间：22:38:12" itemprop="dateCreated datePublished" datetime="2024-04-22T22:00:00+08:00">2024-04-22</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>参考链接：<br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/37701743">https://zhuanlan.zhihu.com/p/37701743</a></p>
+<h1 id="简单解释“注解”"><a href="#简单解释“注解”" class="headerlink" title="简单解释“注解”"></a>简单解释“注解”</h1><p>在接口、类、属性、方法上，写一个标签。</p>
+<p>写了标签之后，开发者可以通过标签，调用一些信息。</p>
+<p>比如：我给cat、dog类打上标签“@animals”</p>
+<p>开发者想要cat、dog的相关信息，此时调用animals获取相关信息。</p>
+<h1 id="编译器是如何理解被注解的东东（接口、类、属性、方法）？"><a href="#编译器是如何理解被注解的东东（接口、类、属性、方法）？" class="headerlink" title="编译器是如何理解被注解的东东（接口、类、属性、方法）？"></a>编译器是如何理解被注解的东东（接口、类、属性、方法）？</h1><p>被注解的对象的信息，是通过反射获取。</p>
+
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2024-04-22T22:00:00+08:00"
-              content="2024-04-22">
-          04-22
-        </time>
-      </div>
+    
+    
+    
 
-      <div class="post-title">
-          <a class="post-title-link" href="/2024/04/22/java%E7%9A%84%E6%B3%A8%E8%A7%A3/" itemprop="url">
-            <span itemprop="name">Java的注解</span>
-          </a>
-      </div>
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+          </div>
 
-      
-    </header>
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/04/22/%E9%80%9F%E6%88%90%E5%85%A8%E6%A0%88%E5%BC%80%E5%8F%91%EF%BC%88%E9%9B%BE%EF%BC%89/" rel="prev" title="SpringBoot+Vue全栈开发（假）">
+                  <i class="fa fa-angle-left"></i> SpringBoot+Vue全栈开发（假）
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
   </article>
+</div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2024-04-22T17:00:00+08:00"
-              content="2024-04-22">
-          04-22
-        </time>
-      </div>
 
-      <div class="post-title">
-          <a class="post-title-link" href="/2024/04/22/%E9%80%9F%E6%88%90%E5%85%A8%E6%A0%88%E5%BC%80%E5%8F%91%EF%BC%88%E9%9B%BE%EF%BC%89/" itemprop="url">
-            <span itemprop="name">SpringBoot+Vue全栈开发（假）</span>
-          </a>
-      </div>
 
-      
-    </header>
-  </article>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2024-04-20T14:10:00+08:00"
-              content="2024-04-20">
-          04-20
-        </time>
-      </div>
 
-      <div class="post-title">
-          <a class="post-title-link" href="/2024/04/20/Springboot+redis/" itemprop="url">
-            <span itemprop="name">SpringBoot+Redis</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2024-04-19T21:00:00+08:00"
-              content="2024-04-19">
-          04-19
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2024/04/19/%E9%80%9F%E6%88%90SpringBoot/" itemprop="url">
-            <span itemprop="name">速成SpringBoot</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-    </div>
-  </div>
-  
-  
-  
 
 </div>
   </main>

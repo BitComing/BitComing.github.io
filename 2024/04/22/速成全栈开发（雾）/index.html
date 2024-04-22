@@ -19,25 +19,28 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"bitcoming.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.19.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="技术带来进步">
-<meta property="og:type" content="website">
-<meta property="og:title" content="BitComing&#39;s Blog">
-<meta property="og:url" content="https://bitcoming.github.io/tags/Java/index.html">
+    <meta name="description" content="参考链接：https:&#x2F;&#x2F;www.bilibili.com&#x2F;video&#x2F;BV1nV4y1s7ZN Spring Boot：就是尽可能地简化应用开发的门槛，让应用开发、测试、部署变得更加简单。  涉及三个岗位的职能：开发、测试、运维。  创建利用IDEA提供的Spring Initializr创建SpringBoot应用。主要工作：指定项目的基本信息（如项目名称、包名等），选择所需的 Spring">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringBoot+Vue全栈开发（假）">
+<meta property="og:url" content="https://bitcoming.github.io/2024/04/22/%E9%80%9F%E6%88%90%E5%85%A8%E6%A0%88%E5%BC%80%E5%8F%91%EF%BC%88%E9%9B%BE%EF%BC%89/index.html">
 <meta property="og:site_name" content="BitComing&#39;s Blog">
-<meta property="og:description" content="技术带来进步">
+<meta property="og:description" content="参考链接：https:&#x2F;&#x2F;www.bilibili.com&#x2F;video&#x2F;BV1nV4y1s7ZN Spring Boot：就是尽可能地简化应用开发的门槛，让应用开发、测试、部署变得更加简单。  涉及三个岗位的职能：开发、测试、运维。  创建利用IDEA提供的Spring Initializr创建SpringBoot应用。主要工作：指定项目的基本信息（如项目名称、包名等），选择所需的 Spring">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-04-22T09:00:00.000Z">
+<meta property="article:modified_time" content="2024-04-22T14:42:17.565Z">
 <meta property="article:author" content="BitComing">
+<meta property="article:tag" content="Java">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="https://bitcoming.github.io/tags/Java/">
+<link rel="canonical" href="https://bitcoming.github.io/2024/04/22/%E9%80%9F%E6%88%90%E5%85%A8%E6%A0%88%E5%BC%80%E5%8F%91%EF%BC%88%E9%9B%BE%EF%BC%89/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":false,"lang":"zh-CN","comments":"","permalink":"","path":"tags/Java/index.html","title":""}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://bitcoming.github.io/2024/04/22/%E9%80%9F%E6%88%90%E5%85%A8%E6%A0%88%E5%BC%80%E5%8F%91%EF%BC%88%E9%9B%BE%EF%BC%89/","path":"2024/04/22/速成全栈开发（雾）/","title":"SpringBoot+Vue全栈开发（假）"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>标签: Java | BitComing's Blog</title>
+<title>SpringBoot+Vue全栈开发（假） | BitComing's Blog</title>
   
 
 
@@ -96,7 +99,7 @@
   
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -109,6 +112,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA"><span class="nav-number">1.</span> <span class="nav-text">创建</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E7%83%AD%E9%83%A8%E7%BD%B2"><span class="nav-number">2.</span> <span class="nav-text">开发环境热部署</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -148,110 +152,113 @@
 
     </div>
 
-    <div class="main-inner tag posts-collapse">
+    <div class="main-inner post posts-expand">
 
 
   
+
+
+<div class="post-block">
   
   
-  <div class="post-block">
-    <div class="post-content">
-      <div class="collection-title">
-        <h1 class="collection-header">Java
-          <small>标签</small>
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://bitcoming.github.io/2024/04/22/%E9%80%9F%E6%88%90%E5%85%A8%E6%A0%88%E5%BC%80%E5%8F%91%EF%BC%88%E9%9B%BE%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="BitComing">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BitComing's Blog">
+      <meta itemprop="description" content="技术带来进步">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="SpringBoot+Vue全栈开发（假） | BitComing's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SpringBoot+Vue全栈开发（假）
         </h1>
-      </div>
 
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
       
-    <div class="collection-year">
-      <span class="collection-header">2024</span>
+
+      <time title="创建时间：2024-04-22 17:00:00 / 修改时间：22:42:17" itemprop="dateCreated datePublished" datetime="2024-04-22T17:00:00+08:00">2024-04-22</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>参考链接：<br><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1nV4y1s7ZN">https://www.bilibili.com/video/BV1nV4y1s7ZN</a></p>
+<p>Spring Boot：就是尽可能地简化应用开发的门槛，让应用开发、测试、部署变得更加简单。</p>
+<ul>
+<li>涉及三个岗位的职能：开发、测试、运维。</li>
+</ul>
+<h1 id="创建"><a href="#创建" class="headerlink" title="创建"></a>创建</h1><p>利用IDEA提供的Spring Initializr创建SpringBoot应用。<br>主要工作：指定项目的基本信息（如项目名称、包名等），选择所需的 Spring Boot 版本和语言（如 Java、Kotlin、Groovy），添加所需的依赖（如 Web、数据库访问、安全等），并自动生成一个可用的 Spring 项目的初始代码结构。<br>在SpringBoot的初始项目中，可以看到自动生成的各种配置文件。</p>
+<blockquote>
+<p>补充：maven是java项目的构建工具。Gradle是kotlin的构建工具。</p>
+</blockquote>
+<blockquote>
+<p>什么是依赖？<br>依赖的思想就是一个类在某种程度上依赖于另外一个类。最常见的依赖就是一个类的方法调用另一个类的方法，这就已经建立了“使用”的关系。</p>
+</blockquote>
+<h1 id="开发环境热部署"><a href="#开发环境热部署" class="headerlink" title="开发环境热部署"></a>开发环境热部署</h1><p>热部署作用：在Spring项目运行的时候，修改代码及时出现效果，而不需要暂停项目的运行。</p>
+
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2024-04-22T22:00:00+08:00"
-              content="2024-04-22">
-          04-22
-        </time>
-      </div>
+    
+    
+    
 
-      <div class="post-title">
-          <a class="post-title-link" href="/2024/04/22/java%E7%9A%84%E6%B3%A8%E8%A7%A3/" itemprop="url">
-            <span itemprop="name">Java的注解</span>
-          </a>
-      </div>
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+          </div>
 
-      
-    </header>
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/04/20/%E9%9F%A9%E5%9B%BD%E5%A8%B1%E4%B9%90%E5%85%AC%E5%8F%B8/" rel="prev" title="韩国娱乐公司">
+                  <i class="fa fa-angle-left"></i> 韩国娱乐公司
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2024/04/22/java%E7%9A%84%E6%B3%A8%E8%A7%A3/" rel="next" title="Java的注解">
+                  Java的注解 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
   </article>
+</div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2024-04-22T17:00:00+08:00"
-              content="2024-04-22">
-          04-22
-        </time>
-      </div>
 
-      <div class="post-title">
-          <a class="post-title-link" href="/2024/04/22/%E9%80%9F%E6%88%90%E5%85%A8%E6%A0%88%E5%BC%80%E5%8F%91%EF%BC%88%E9%9B%BE%EF%BC%89/" itemprop="url">
-            <span itemprop="name">SpringBoot+Vue全栈开发（假）</span>
-          </a>
-      </div>
 
-      
-    </header>
-  </article>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2024-04-20T14:10:00+08:00"
-              content="2024-04-20">
-          04-20
-        </time>
-      </div>
 
-      <div class="post-title">
-          <a class="post-title-link" href="/2024/04/20/Springboot+redis/" itemprop="url">
-            <span itemprop="name">SpringBoot+Redis</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-      <div class="post-meta-container">
-        <time itemprop="dateCreated"
-              datetime="2024-04-19T21:00:00+08:00"
-              content="2024-04-19">
-          04-19
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2024/04/19/%E9%80%9F%E6%88%90SpringBoot/" itemprop="url">
-            <span itemprop="name">速成SpringBoot</span>
-          </a>
-      </div>
-
-      
-    </header>
-  </article>
-
-    </div>
-  </div>
-  
-  
-  
 
 </div>
   </main>
