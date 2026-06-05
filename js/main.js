@@ -233,15 +233,15 @@ async function loadPosts() {
             ].join('\n');
         }).join('\n');
 
-        // 5. Attach open-modal handlers to every post link
+        // 5. Attach open-article handlers to every post link
         container.querySelectorAll('.post-link').forEach(function (link) {
             link.addEventListener('click', function () {
-                openPostModal(link.dataset.file, link.dataset.title, basePath);
+                openArticleView(link.dataset.file, link.dataset.title, basePath);
             });
             link.addEventListener('keydown', function (e) {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
-                    openPostModal(link.dataset.file, link.dataset.title, basePath);
+                    openArticleView(link.dataset.file, link.dataset.title, basePath);
                 }
             });
         });
@@ -253,42 +253,78 @@ async function loadPosts() {
 }
 
 /* ===================================================
-   3. Modal Module
+   3. Article View Module
    =================================================== */
 
-/** Track whether the modal is currently open. */
-let _modalOpen = false;
+/**
+ * Shows the article view in the content section, hiding other sections.
+ */
+function showArticleView() {
+    const articleView = document.getElementById('article-view');
+    const sections = document.querySelectorAll('.fade-section:not(#article-view)');
+    
+    sections.forEach(function (section) {
+        section.style.display = 'none';
+    });
+    
+    articleView.style.display = 'block';
+    articleView.classList.add('visible');
+}
+
+/**
+ * Hides the article view and shows all other sections.
+ */
+function hideArticleView() {
+    const articleView = document.getElementById('article-view');
+    const sections = document.querySelectorAll('.fade-section:not(#article-view)');
+    
+    sections.forEach(function (section) {
+        section.style.display = 'block';
+    });
+    
+    articleView.style.display = 'none';
+    articleView.classList.remove('visible');
+    
+    document.getElementById('article-title').textContent = '';
+    document.getElementById('article-body').innerHTML = '';
+}
 
 /**
  * Fetches a Markdown file (or reads from cache), renders it with marked.js,
- * and displays the modal.
+ * and displays it in the article view section.
  * @param {string} filePath  Relative path to the .md file (e.g. "posts/react-learning.md")
- * @param {string} title     Article title to show in modal header
+ * @param {string} title     Article title to show
  * @param {string} basePath  Base URL prefix
  */
-async function openPostModal(filePath, title, basePath) {
-    const overlay    = document.getElementById('modal-overlay');
-    const modalTitle = document.getElementById('modal-title');
-    const modalBody  = document.getElementById('modal-body');
-    if (!overlay || !modalTitle || !modalBody) return;
+async function openArticleView(filePath, title, basePath) {
+    const articleView  = document.getElementById('article-view');
+    const articleTitle = document.getElementById('article-title');
+    const articleBody  = document.getElementById('article-body');
+    
+    if (!articleView || !articleTitle || !articleBody) {
+        console.error('[Article] 无法找到文章视图元素');
+        return;
+    }
 
-    // Show modal with loading state first (fast feedback)
-    modalTitle.textContent = title || '文章';
-    modalBody.innerHTML = '<p class="loading">加载中…</p>';
-    overlay.classList.add('open');
-    _modalOpen = true;
-    document.body.style.overflow = 'hidden';
+    articleTitle.textContent = title || '文章';
+    articleBody.innerHTML = '<p class="loading">加载中…</p>';
+    
+    document.getElementById('about').style.display = 'none';
+    document.getElementById('posts').style.display = 'none';
+    document.getElementById('contact').style.display = 'none';
+    
+    articleView.style.opacity = '1';
+    articleView.style.transform = 'translateY(0)';
+    articleView.style.display = 'block';
 
     try {
         /** @type {string} */
         let markdown = '';
 
-        // Use cached body if available (from loadPosts frontmatter parse)
         const cached = _postCache.get(filePath);
         if (cached && typeof cached.body === 'string' && cached.body.length > 0) {
             markdown = cached.body;
         } else {
-            // Fallback: fetch and parse on demand
             const url = basePath + filePath;
             const response = await fetch(url);
             if (!response.ok) {
@@ -297,67 +333,38 @@ async function openPostModal(filePath, title, basePath) {
             const raw = await response.text();
             const parsed = parseFrontmatter(raw);
             markdown = parsed.body;
-            // Also cache for later
             _postCache.set(filePath, parsed);
         }
 
-        // Use marked.js (loaded from CDN) to parse Markdown → HTML
         /** @type {string} */
         let html = '';
         if (typeof marked !== 'undefined') {
             html = marked.parse(markdown);
         } else {
-            // Fallback: display raw markdown in a <pre>
             html = '<pre>' + escapeHtml(markdown) + '</pre>';
         }
 
-        modalBody.innerHTML = html;
-        modalBody.scrollTop = 0;
+        articleBody.innerHTML = html;
+        articleBody.scrollTop = 0;
 
     } catch (err) {
-        console.error('[Modal] 加载文章失败:', err);
-        modalBody.innerHTML = '<p class="error">文章加载失败，请检查网络后重试</p>';
+        console.error('[Article] 加载文章失败:', err);
+        articleBody.innerHTML = '<p class="error">文章加载失败，请检查网络后重试</p>';
     }
 }
 
 /**
- * Closes the modal overlay.
+ * Binds the back button click handler to return to home view.
  */
-function closeModal() {
-    const overlay = document.getElementById('modal-overlay');
-    if (!overlay) return;
-    overlay.classList.remove('open');
-    _modalOpen = false;
-    document.body.style.overflow = '';
-}
-
-/**
- * Binds all modal close triggers:
- *  - × close button
- *  - Click on the overlay background (outside container)
- *  - Escape key
- */
-function bindModalClose() {
-    const overlay   = document.getElementById('modal-overlay');
-    const closeBtn  = document.getElementById('modal-close');
-    const container = overlay && overlay.querySelector('.modal-container');
-
-    if (closeBtn) {
-        closeBtn.addEventListener('click', closeModal);
-    }
-
-    if (overlay) {
-        overlay.addEventListener('click', function (e) {
-            // Close only when clicking the backdrop (not the container itself)
-            if (container && !container.contains(e.target)) {
-                closeModal();
-            }
-        });
-    }
-
-    document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && _modalOpen) {
-            closeModal();
+function bindBackButton() {
+    const backBtn = document.getElementById('back-btn');
+    if (!backBtn) return;
+    
+    backBtn.addEventListener('click', function () {
+        hideArticleView();
+        const aboutSection = document.getElementById('about');
+        if (aboutSection) {
+            aboutSection.scrollIntoView({ behavior: 'smooth' });
         }
     });
 }
@@ -502,8 +509,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // 3. Load & render post list
     loadPosts();
 
-    // 4. Wire modal close handlers
-    bindModalClose();
+    // 4. Wire back button handler
+    bindBackButton();
 
     // 5. Track active nav section on scroll
     initNavObserver();
