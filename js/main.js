@@ -3,10 +3,11 @@
  *
  * Modules:
  *  1. Theme   — dark/light mode toggle with localStorage persistence
- *  2. Posts   — fetch manifest.json, parse YAML frontmatter from .md files
- *  3. Modal   — Markdown reading modal with marked.js + cache
- *  4. Nav     — active nav-link tracking via IntersectionObserver
- *  5. Reveal  — fade-in animation for sections via IntersectionObserver
+ *  2. Sidebar — collapse/expand sidebar with localStorage persistence
+ *  3. Posts   — fetch manifest.json, parse YAML frontmatter from .md files
+ *  4. Article — Markdown reading view with marked.js + cache
+ *  5. Nav     — active nav-link tracking via IntersectionObserver
+ *  6. Reveal  — fade-in animation for sections via IntersectionObserver
  */
 
 'use strict';
@@ -47,10 +48,10 @@ function applyTheme(theme) {
     const btn = document.getElementById('theme-toggle');
     if (theme === 'dark') {
         html.classList.add('dark');
-        if (btn) btn.textContent = '☀️';
+        if (btn) btn.textContent = '●';
     } else {
         html.classList.remove('dark');
-        if (btn) btn.textContent = '🌙';
+        if (btn) btn.textContent = '○';
     }
 }
 
@@ -84,7 +85,54 @@ function bindThemeToggle() {
 }
 
 /* ===================================================
-   2. Posts Module
+   2. Sidebar Collapse Module
+   =================================================== */
+
+/** Key used to persist sidebar collapsed state in localStorage. */
+const SIDEBAR_KEY = 'bc-sidebar';
+
+/**
+ * Applies sidebar collapsed or expanded state.
+ * @param {boolean} collapsed
+ */
+function applySidebar(collapsed) {
+    const sidebar = document.querySelector('.sidebar');
+    const toggleBtn = document.getElementById('sidebar-toggle');
+    if (!sidebar) return;
+    if (collapsed) {
+        sidebar.classList.add('collapsed');
+        if (toggleBtn) toggleBtn.textContent = '▶';
+    } else {
+        sidebar.classList.remove('collapsed');
+        if (toggleBtn) toggleBtn.textContent = '◀';
+    }
+}
+
+/**
+ * Initialises sidebar state from localStorage.
+ */
+function initSidebar() {
+    const saved = localStorage.getItem(SIDEBAR_KEY);
+    applySidebar(saved === 'collapsed');
+}
+
+/**
+ * Binds click event on the sidebar toggle button.
+ */
+function bindSidebarToggle() {
+    const btn = document.getElementById('sidebar-toggle');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+        const sidebar = document.querySelector('.sidebar');
+        const collapsed = sidebar.classList.contains('collapsed');
+        const next = !collapsed;
+        applySidebar(next);
+        localStorage.setItem(SIDEBAR_KEY, next ? 'collapsed' : 'expanded');
+    });
+}
+
+/* ===================================================
+   3. Posts Module
    =================================================== */
 
 /**
@@ -253,7 +301,7 @@ async function loadPosts() {
 }
 
 /* ===================================================
-   3. Article View Module
+   4. Article View Module
    =================================================== */
 
 /**
@@ -370,7 +418,7 @@ function bindBackButton() {
 }
 
 /* ===================================================
-   4. Navigation Active-State Module
+   5. Navigation Active-State Module
    =================================================== */
 
 /**
@@ -430,7 +478,7 @@ function updateActiveLink(activeId, links) {
 }
 
 /* ===================================================
-   5. Section Reveal Animation Module
+   6. Section Reveal Animation Module
    =================================================== */
 
 /**
@@ -506,15 +554,21 @@ document.addEventListener('DOMContentLoaded', function () {
     // 2. Wire up theme toggle button
     bindThemeToggle();
 
-    // 3. Load & render post list
+    // 3. Apply sidebar collapsed state
+    initSidebar();
+
+    // 4. Wire up sidebar toggle button
+    bindSidebarToggle();
+
+    // 5. Load & render post list
     loadPosts();
 
-    // 4. Wire back button handler
+    // 6. Wire back button handler
     bindBackButton();
 
-    // 5. Track active nav section on scroll
+    // 7. Track active nav section on scroll
     initNavObserver();
 
-    // 6. Animate sections into view
+    // 8. Animate sections into view
     initRevealObserver();
 });
