@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BitComing — Developer & Creator</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- marked.js for Markdown rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <!-- Theme toggle button -->
+            <button class="theme-toggle" id="theme-toggle" aria-label="切换暗色模式">🌙</button>
+
+            <div class="profile">
+                <!-- SVG gradient avatar with initial "B" -->
+                <div class="avatar" aria-hidden="true">
+                    <svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="avatarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <circle cx="40" cy="40" r="40" fill="url(#avatarGrad)" />
+                        <text x="40" y="46" text-anchor="middle" font-family="Helvetica Neue, Arial, sans-serif"
+                              font-size="30" font-weight="700" fill="#fff" letter-spacing="1">B</text>
+                    </svg>
+                </div>
+                <h1>BitComing</h1>
+                <p class="tagline">Developer &amp; Creator</p>
+            </div>
+
+            <nav>
+                <a href="#about" class="nav-link active">关于我</a>
+                <a href="#posts" class="nav-link">文章</a>
+                <a href="#contact" class="nav-link">联系</a>
+            </nav>
+
+            <div class="contact-links-sidebar">
+                <a href="https://github.com/BitComing" target="_blank" rel="noopener noreferrer">GitHub</a>
+                <a href="mailto:livov@foxmail.com">Email</a>
+            </div>
+        </aside>
+
+        <main class="content">
+            <section id="about" class="fade-section">
+                <h2>关于我</h2>
+                <div class="about-content">
+                    <p>思考中。</p>
+                </div>
+            </section>
+
+            <section id="posts" class="fade-section">
+                <h2>我的文章</h2>
+                <div class="posts-list" id="posts-container">
+                    <div class="loading">加载中...</div>
+                </div>
+            </section>
+
+            <section id="contact" class="fade-section">
+                <h2>联系我</h2>
+                <p>欢迎通过以下方式联系我：</p>
+                <div class="contact-links">
+                    <a href="https://github.com/BitComing" target="_blank" rel="noopener noreferrer">GitHub</a>
+                    <a href="mailto:livov@foxmail.com">Email</a>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 BitComing. All rights reserved.</p>
+    </footer>
+
+    <!-- Article reading modal overlay -->
+    <div class="modal-overlay" id="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modal-title"></h2>
+                <button class="modal-close" id="modal-close" aria-label="关闭">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-body"></div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
