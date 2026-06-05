@@ -3,8 +3,8 @@
  *
  * Modules:
  *  1. Theme   — dark/light mode toggle with localStorage persistence
- *  2. Posts   — fetch posts.json, render article list
- *  3. Modal   — Markdown reading modal with marked.js
+ *  2. Posts   — fetch manifest.json, parse YAML frontmatter from .md files
+ *  3. Modal   — Markdown reading modal with marked.js + cache
  *  4. Nav     — active nav-link tracking via IntersectionObserver
  *  5. Reveal  — fade-in animation for sections via IntersectionObserver
  */
@@ -88,9 +88,69 @@ function bindThemeToggle() {
    =================================================== */
 
 /**
- * Fetches posts.json and renders the article list.
- * On success each article title becomes a clickable link
- * that opens the Markdown modal instead of navigating away.
+ * Cache for parsed markdown files.
+ * Key: file path (e.g. "posts/react-learning.md")
+ * Value: { meta: {title, date, description, ...}, body: string }
+ */
+const _postCache = new Map();
+
+/**
+ * Parses YAML frontmatter from a markdown string.
+ *
+ * Frontmatter must be at the very start of the file, delimited by `---`
+ * on its own line before and after the YAML block.  Supports simple
+ * key: value pairs (no nesting, no lists).  Values may be quoted.
+ *
+ * @param {string} markdown  Raw markdown text (may include frontmatter)
+ * @returns {{ meta: Record<string,string>, body: string }}
+ *   - meta:  parsed key-value pairs from the frontmatter block
+ *   - body:  everything after the closing `---` (the article content)
+ */
+function parseFrontmatter(markdown) {
+    const meta = {};
+    let body = markdown;
+
+    // Frontmatter only recognised when the file starts with ---
+    if (!markdown.startsWith('---')) {
+        return { meta: meta, body: body };
+    }
+
+    // Find the closing --- (starting from position 3, after the first ---)
+    const end = markdown.indexOf('\n---', 3);
+    if (end === -1) {
+        // No closing delimiter — treat the whole file as body
+        return { meta: meta, body: body };
+    }
+
+    const fmBlock = markdown.substring(4, end); // skip first "---\n"
+    body = markdown.substring(end + 4).trimStart(); // skip "\n---\n"
+
+    // Parse each line as "key: value"
+    fmBlock.split('\n').forEach(function (line) {
+        const colonIdx = line.indexOf(':');
+        if (colonIdx === -1) return; // skip lines without a colon
+
+        const key = line.substring(0, colonIdx).trim();
+        let value = line.substring(colonIdx + 1).trim();
+
+        // Strip surrounding quotes (single or double)
+        if ((value.startsWith('"') && value.endsWith('"')) ||
+            (value.startsWith("'") && value.endsWith("'"))) {
+            value = value.slice(1, -1);
+        }
+
+        if (key) {
+            meta[key] = value;
+        }
+    });
+
+    return { meta: meta, body: body };
+}
+
+/**
+ * Fetches manifest.json (a flat list of .md filenames), then fetches each
+ * .md file, parses its YAML frontmatter for metadata, and renders the
+ * article list.  Markdown bodies are cached so the modal can reuse them.
  */
 async function loadPosts() {
     const container = document.getElementById('posts-container');
@@ -99,35 +159,65 @@ async function loadPosts() {
     const basePath = getBasePath();
 
     try {
-        const response = await fetch(`${basePath}posts/posts.json`);
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
+        // 1. Fetch the manifest — just a list of filenames
+        const manifestUrl = `${basePath}posts/manifest.json`;
+        const manifestResp = await fetch(manifestUrl);
+        if (!manifestResp.ok) {
+            throw new Error(`Manifest HTTP ${manifestResp.status}`);
         }
 
-        /** @type {Array<{title:string, description:string, date:string, file:string}>} */
-        const posts = await response.json();
+        /** @type {string[]} */
+        const filenames = await manifestResp.json();
 
-        if (!Array.isArray(posts) || posts.length === 0) {
+        if (!Array.isArray(filenames) || filenames.length === 0) {
             container.innerHTML = '<p class="error">暂无文章</p>';
             return;
         }
 
-        // Sort newest first
+        // 2. Fetch every .md file and parse its frontmatter
+        /** @type {Array<{title:string, description:string, date:string, file:string}>} */
+        const posts = [];
+
+        await Promise.all(filenames.map(async function (filename) {
+            const filePath = filename.startsWith('posts/')
+                ? filename
+                : 'posts/' + filename;
+
+            try {
+                const resp = await fetch(basePath + filePath);
+                if (!resp.ok) {
+                    console.warn('[Posts] 跳过无法加载的文件:', filePath, resp.status);
+                    return;
+                }
+                const raw = await resp.text();
+                const { meta, body } = parseFrontmatter(raw);
+
+                // Cache the parsed result for the modal
+                _postCache.set(filePath, { meta: meta, body: body });
+
+                posts.push({
+                    title:       meta.title       || filename,
+                    description: meta.description || '',
+                    date:        meta.date        || '',
+                    file:        filePath
+                });
+            } catch (err) {
+                console.warn('[Posts] 解析失败:', filePath, err);
+            }
+        }));
+
+        if (posts.length === 0) {
+            container.innerHTML = '<p class="error">暂无文章</p>';
+            return;
+        }
+
+        // 3. Sort newest first
         posts.sort(function (a, b) {
             return new Date(b.date) - new Date(a.date);
         });
 
-        // Normalise file paths so they always include "posts/" prefix
-        const normalised = posts.map(function (post) {
-            return Object.assign({}, post, {
-                file: post.file.startsWith('posts/')
-                    ? post.file
-                    : 'posts/' + post.file
-            });
-        });
-
-        // Render HTML — use data-* attribute for the file path, no href navigation
-        container.innerHTML = normalised.map(function (post) {
+        // 4. Render HTML
+        container.innerHTML = posts.map(function (post) {
             return [
                 '<article>',
                 '  <h3>',
@@ -143,12 +233,11 @@ async function loadPosts() {
             ].join('\n');
         }).join('\n');
 
-        // Attach open-modal handlers to every post link
+        // 5. Attach open-modal handlers to every post link
         container.querySelectorAll('.post-link').forEach(function (link) {
             link.addEventListener('click', function () {
                 openPostModal(link.dataset.file, link.dataset.title, basePath);
             });
-            // Keyboard accessibility: trigger on Enter/Space
             link.addEventListener('keydown', function (e) {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
@@ -171,8 +260,9 @@ async function loadPosts() {
 let _modalOpen = false;
 
 /**
- * Fetches a Markdown file, renders it with marked.js, and displays the modal.
- * @param {string} filePath  Relative path to the .md file (e.g. "posts/first-post.md")
+ * Fetches a Markdown file (or reads from cache), renders it with marked.js,
+ * and displays the modal.
+ * @param {string} filePath  Relative path to the .md file (e.g. "posts/react-learning.md")
  * @param {string} title     Article title to show in modal header
  * @param {string} basePath  Base URL prefix
  */
@@ -190,18 +280,31 @@ async function openPostModal(filePath, title, basePath) {
     document.body.style.overflow = 'hidden';
 
     try {
-        const url = basePath + filePath;
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
+        /** @type {string} */
+        let markdown = '';
+
+        // Use cached body if available (from loadPosts frontmatter parse)
+        const cached = _postCache.get(filePath);
+        if (cached && typeof cached.body === 'string' && cached.body.length > 0) {
+            markdown = cached.body;
+        } else {
+            // Fallback: fetch and parse on demand
+            const url = basePath + filePath;
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            const raw = await response.text();
+            const parsed = parseFrontmatter(raw);
+            markdown = parsed.body;
+            // Also cache for later
+            _postCache.set(filePath, parsed);
         }
-        const markdown = await response.text();
 
         // Use marked.js (loaded from CDN) to parse Markdown → HTML
         /** @type {string} */
         let html = '';
         if (typeof marked !== 'undefined') {
-            // marked v4+: marked.parse() returns a string
             html = marked.parse(markdown);
         } else {
             // Fallback: display raw markdown in a <pre>
@@ -209,7 +312,6 @@ async function openPostModal(filePath, title, basePath) {
         }
 
         modalBody.innerHTML = html;
-        // Scroll back to top after content swap
         modalBody.scrollTop = 0;
 
     } catch (err) {
