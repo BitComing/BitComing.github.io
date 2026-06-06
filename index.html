@@ -12,85 +12,89 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
-    <!-- Theme toggle — fixed top-right -->
-    <button class="theme-toggle" id="theme-toggle" aria-label="切换暗色模式">◑</button>
+    <!-- ==========================================
+         Top Navigation Bar
+         ========================================== -->
+    <header class="topbar">
+        <div class="topbar-inner">
+            <!-- Site brand -->
+            <a href="#" class="brand" data-tab="about" aria-label="首页">
+                <svg width="28" height="28" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <circle cx="40" cy="40" r="38" fill="none" stroke="currentColor" stroke-width="4" />
+                    <text x="40" y="47" text-anchor="middle" font-family="JetBrains Mono, Courier New, monospace"
+                          font-size="28" font-weight="700" fill="currentColor">B</text>
+                </svg>
+                <span>BitComing</span>
+            </a>
 
-    <div class="layout">
-        <aside class="sidebar">
-            <!-- Sidebar collapse toggle button -->
-            <button class="sidebar-toggle" id="sidebar-toggle" aria-label="折叠侧栏">◀</button>
-
-            <div class="profile">
-                <!-- Monochrome avatar with initial "B" -->
-                <div class="avatar" aria-hidden="true">
-                    <svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="40" cy="40" r="38" fill="none" stroke="currentColor" stroke-width="4" />
-                        <text x="40" y="47" text-anchor="middle" font-family="JetBrains Mono, Courier New, monospace"
-                              font-size="28" font-weight="700" fill="currentColor" letter-spacing="0">B</text>
-                    </svg>
-                </div>
-                <h1>BitComing</h1>
-                <p class="tagline">Developer &amp; Creator</p>
-            </div>
-
-            <nav>
-                <a href="#about" class="nav-link active">关于我</a>
-                <a href="#posts" class="nav-link">文章</a>
-                <a href="#contact" class="nav-link">联系</a>
+            <!-- Tab navigation -->
+            <nav class="tabs">
+                <button class="tab active" data-tab="about">关于我</button>
+                <button class="tab" data-tab="posts">文章</button>
+                <button class="tab" data-tab="contact">联系</button>
             </nav>
 
-            <div class="contact-links-sidebar">
+            <!-- Right side: theme toggle -->
+            <button class="theme-toggle" id="theme-toggle" aria-label="切换暗色模式">◑</button>
+        </div>
+    </header>
+
+    <!-- ==========================================
+         Tab Content Panels
+         ========================================== -->
+    <main class="content">
+
+        <!-- About Tab (default) -->
+        <section id="tab-about" class="tab-panel active">
+            <h1>🐾 关于我</h1>
+            <div class="about-content">
+                <h2>Intro</h2>
+                <p>🏆 2026年美加墨世界杯</p>
+                <p>⚡️ vibe coding, claude code, codex</p>
+                <p>🤖 Agent, AI, web3, Blockchain</p>
+                <p>🎵 IVE, blackpink, yoona</p>
+                <p>⚽️ Manchester United</p>
+                <p>📒 Obsidian PKM, notion</p>
+                <p>🚀 SpaceX, Elon Musk</p>
+                <p>🌕 2050</p>
+                <h2>Contact</h2>
+                <p>Creative and Destructive</p>
+                <p>Change and Adapt</p>
+                <p>Era is like a river</p>
+            </div>
+        </section>
+
+        <!-- Posts Tab -->
+        <section id="tab-posts" class="tab-panel">
+            <h1>📚 我的文章</h1>
+            <div class="posts-list" id="posts-container">
+                <div class="loading">加载中...</div>
+            </div>
+        </section>
+
+        <!-- Contact Tab -->
+        <section id="tab-contact" class="tab-panel">
+            <h1>☎️ 联系我</h1>
+            <p>欢迎通过以下方式联系我：</p>
+            <div class="contact-links">
                 <a href="https://github.com/BitComing" target="_blank" rel="noopener noreferrer">GitHub</a>
                 <a href="mailto:livov@foxmail.com">Email</a>
             </div>
-        </aside>
+        </section>
 
-        <main class="content">
-            <section id="about" class="fade-section">
-                <h1>🐾关于我</h1>
-                <div class="about-content">
-                    <h2>Intro</h2>
-                    <p>🏆2026年美加墨世界杯</p>
-                    <p>⚡️vibe coding, claude code, codex</p>
-                    <p>🤖Agent, AI, web3, Blockchain</p>
-                    <p>🎵IVE, blackpink, yoona</p>
-                    <p>⚽️Manchester United</p>
-                    <p>📒Obsidian PKM, notion</p>
-                    <p>🚀SpaceX, Elon Musk</p>
-                    <p>🌕2050</p>
-                    <h2>Contact</h2>
-                    <p>Creative and Destructive</p>
-                    <p>Change and Adapt</p>
-                    <p>Era is like a river</p>
-                </div>
-            </section>
+        <!-- Article View (overlay) -->
+        <section id="article-view" class="tab-panel" style="display: none;">
+            <div class="article-header">
+                <button class="back-btn" id="back-btn" aria-label="返回文章列表">← 返回</button>
+                <h1 class="article-title" id="article-title"></h1>
+            </div>
+            <div class="article-body" id="article-body"></div>
+        </section>
+    </main>
 
-            <section id="posts" class="fade-section">
-                <h1>📚我的文章</h1>
-                <div class="posts-list" id="posts-container">
-                    <div class="loading">加载中...</div>
-                </div>
-            </section>
-
-            <section id="contact" class="fade-section">
-                <h1>☎️联系我</h1>
-                <p>欢迎通过以下方式联系我：</p>
-                <div class="contact-links">
-                    <a href="https://github.com/BitComing" target="_blank" rel="noopener noreferrer">GitHub</a>
-                    <a href="mailto:livov@foxmail.com">Email</a>
-                </div>
-            </section>
-
-            <section id="article-view" class="fade-section article-view" style="display: none;">
-                <div class="article-header">
-                    <button class="back-btn" id="back-btn" aria-label="返回首页">← 返回</button>
-                    <h1 class="article-title" id="article-title"></h1>
-                </div>
-                <div class="article-body" id="article-body"></div>
-            </section>
-        </main>
-    </div>
-
+    <!-- ==========================================
+         Footer
+         ========================================== -->
     <footer>
         <p>&copy; 2030 BitComing. All rights reserved.</p>
     </footer>
