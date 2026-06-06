@@ -239,6 +239,17 @@ body {
 /* ===================================================
    About Content
    =================================================== */
+.about-avatar {
+    display: block;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--border);
+    margin-bottom: 1.2rem;
+    transition: border-color 0.25s ease;
+}
+
 .about-content p {
     margin-bottom: 0.6rem;
     color: var(--text-muted);
