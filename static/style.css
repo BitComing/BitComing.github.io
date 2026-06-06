@@ -259,8 +259,112 @@ body {
 }
 
 /* ===================================================
+   Posts Layout (sidebar + list)
+   =================================================== */
+.posts-layout {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+}
+
+/* ===================================================
+   Tag Filter Sidebar
+   =================================================== */
+.tag-filter {
+    flex-shrink: 0;
+    width: 160px;
+    padding: 1rem 0;
+}
+
+.tag-filter h3 {
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+    letter-spacing: 0.3px;
+    transition: color 0.25s ease;
+}
+
+.tag-filter ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.tag-filter li {
+    margin: 0;
+}
+
+.tag-loading {
+    color: var(--text-faint);
+    font-size: 0.8rem;
+}
+
+.tag-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.3rem 0.55rem;
+    border: none;
+    border-radius: 4px;
+    background: none;
+    color: var(--text-muted);
+    font-family: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+    text-align: left;
+    gap: 0.4rem;
+}
+
+.tag-item:hover {
+    background: var(--accent-light);
+    color: var(--text-primary);
+}
+
+.tag-item.active {
+    background: var(--tag-bg);
+    color: var(--tag-text);
+    font-weight: 600;
+}
+
+.tag-item.active:hover {
+    background: var(--tag-bg);
+    color: var(--tag-text);
+    opacity: 0.85;
+}
+
+.tag-name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tag-count {
+    flex-shrink: 0;
+    font-size: 0.7rem;
+    font-weight: 400;
+    opacity: 0.7;
+}
+
+.tag-item.active .tag-count {
+    opacity: 0.85;
+}
+
+/* ===================================================
    Posts List
    =================================================== */
+.posts-list {
+    flex: 1;
+    min-width: 0;
+}
+
 .posts-list article {
     margin-bottom: 1.2rem;
     padding-bottom: 1.2rem;
@@ -305,6 +409,25 @@ body {
     color: var(--text-faint);
     font-size: 0.78rem;
     transition: color 0.25s ease;
+}
+
+/* Post tags (inline in list entries) */
+.post-tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.25rem;
+}
+
+.post-tag {
+    font-size: 0.75rem;
+    color: var(--text-faint);
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.post-tag:hover {
+    color: var(--text-muted);
 }
 
 /* ===================================================
@@ -459,16 +582,9 @@ footer {
     display: none;
 }
 
-.tag {
-    display: inline-block;
-    background: var(--tag-bg);
-    color: var(--tag-text);
-    font-size: 0.72rem;
-    font-weight: 600;
-    padding: 0.2rem 0.65rem;
-    border-radius: 4px;
-    letter-spacing: 0.4px;
-    transition: background 0.25s ease, color 0.25s ease;
+.article-tag-item {
+    font-size: 0.8rem;
+    color: var(--text-faint);
 }
 
 .article-body {
@@ -664,5 +780,31 @@ footer {
 
     .article-title {
         font-size: 1.1rem;
+    }
+
+    .posts-layout {
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+
+    .tag-filter {
+        width: 100%;
+        padding: 0.5rem 0;
+    }
+
+    .tag-filter ul {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+    }
+
+    .tag-item {
+        width: auto;
+        padding: 0.25rem 0.6rem;
+        font-size: 0.75rem;
+    }
+
+    .tag-item .tag-count {
+        margin-left: 0.25rem;
     }
 }

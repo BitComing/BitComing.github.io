@@ -203,6 +203,12 @@ function hideArticleViewSilent() {
  */
 const _postCache = new Map();
 
+/** @type {Array<{title:string, description:string, date:string, file:string, tags:string[]}>} */
+let _allPosts = [];
+
+/** @type {string|null} Currently active tag filter (null = show all) */
+let _activeTag = null;
+
 /**
  * Parses YAML frontmatter from a markdown string.
  *
@@ -281,9 +287,157 @@ function parseFrontmatter(markdown) {
 }
 
 /**
- * Fetches manifest.json, then fetches each .md file, parses frontmatter,
- * and renders the article list into the posts tab.
+ * Renders the post list into #posts-container from the given posts array.
+ * @param {Array<{title:string, description:string, date:string, file:string, tags:string[]}>} posts
  */
+function renderPostList(posts) {
+    const container = document.getElementById('posts-container');
+    if (!container) return;
+
+    if (posts.length === 0) {
+        container.innerHTML = '<p class="error">没有匹配的文章</p>';
+        return;
+    }
+
+    container.innerHTML = posts.map(function (post) {
+        // Build tag badges HTML
+        var tagsHtml = '';
+        if (Array.isArray(post.tags) && post.tags.length > 0) {
+            tagsHtml = '<div class="post-tags">' +
+                post.tags.map(function (tag) {
+                    return '<span class="post-tag" data-tag="' + escapeAttr(tag) + '" role="button" tabindex="0">#' +
+                        escapeHtml(tag) +
+                    '</span>';
+                }).join('') +
+            '</div>';
+        }
+
+        return [
+            '<article>',
+            '  <h3>',
+            '    <a class="post-link" data-file="' + escapeAttr(post.file) + '"',
+            '       data-title="' + escapeAttr(post.title) + '"',
+            '       role="button" tabindex="0">',
+            escapeHtml(post.title),
+            '    </a>',
+            '  </h3>',
+            '  <p>' + escapeHtml(post.description) + '</p>',
+            '  <span class="date">' + escapeHtml(post.date) + '</span>',
+            tagsHtml,
+            '</article>'
+        ].join('\n');
+    }).join('\n');
+
+    // Attach open-article handlers to every post link
+    container.querySelectorAll('.post-link').forEach(function (link) {
+        link.addEventListener('click', function () {
+            openArticleView(link.dataset.file, link.dataset.title);
+        });
+        link.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                openArticleView(link.dataset.file, link.dataset.title);
+            }
+        });
+    });
+
+    // Attach tag-filter handlers to every post tag badge
+    container.querySelectorAll('.post-tag').forEach(function (tagEl) {
+        tagEl.addEventListener('click', function (e) {
+            e.stopPropagation(); // don't trigger article open
+            handleTagClick(tagEl.dataset.tag);
+        });
+        tagEl.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                e.stopPropagation();
+                handleTagClick(tagEl.dataset.tag);
+            }
+        });
+    });
+}
+
+/**
+ * Builds the tag filter sidebar from _allPosts.
+ * Sorts tags by article count descending.
+ */
+function buildTagFilter() {
+    const tagList = document.getElementById('tag-list');
+    if (!tagList) return;
+
+    // Count posts per tag
+    const tagCounts = {};
+    _allPosts.forEach(function (post) {
+        if (Array.isArray(post.tags)) {
+            post.tags.forEach(function (tag) {
+                tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+            });
+        }
+    });
+
+    // Sort by count descending
+    const sortedTags = Object.entries(tagCounts).sort(function (a, b) {
+        return b[1] - a[1];
+    });
+
+    if (sortedTags.length === 0) {
+        tagList.innerHTML = '<li class="tag-loading">暂无标签</li>';
+        return;
+    }
+
+    tagList.innerHTML = sortedTags.map(function (entry) {
+        var tag = entry[0];
+        var count = entry[1];
+        return '<li>' +
+            '<button class="tag-item" data-tag="' + escapeAttr(tag) + '">' +
+                '<span class="tag-name">' + escapeHtml(tag) + '</span>' +
+                '<span class="tag-count">' + count + '</span>' +
+            '</button>' +
+        '</li>';
+    }).join('');
+
+    // Bind click handlers for each tag button
+    tagList.querySelectorAll('.tag-item').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            handleTagClick(btn.dataset.tag);
+        });
+    });
+}
+
+/**
+ * Toggles a tag filter on/off and re-renders the post list.
+ * @param {string} tag
+ */
+function handleTagClick(tag) {
+    // Toggle: clicking the active tag deselects it
+    if (_activeTag === tag) {
+        _activeTag = null;
+    } else {
+        _activeTag = tag;
+    }
+
+    // Update active class on all tag buttons
+    document.querySelectorAll('.tag-item').forEach(function (btn) {
+        if (btn.dataset.tag === _activeTag) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
+    // Filter posts or show all
+    var filtered = _activeTag
+        ? _allPosts.filter(function (post) {
+            return Array.isArray(post.tags) && post.tags.indexOf(_activeTag) !== -1;
+        })
+        : _allPosts;
+
+    renderPostList(filtered);
+
+    // Scroll to absolute top of page
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 async function loadPosts() {
     const container = document.getElementById('posts-container');
     if (!container) return;
@@ -305,7 +459,7 @@ async function loadPosts() {
             return;
         }
 
-        /** @type {Array<{title:string, description:string, date:string, file:string}>} */
+        /** @type {Array<{title:string, description:string, date:string, file:string, tags:string[]}>} */
         const posts = [];
 
         await Promise.all(filenames.map(async function (filename) {
@@ -328,7 +482,8 @@ async function loadPosts() {
                     title:       meta.title       || filename,
                     description: meta.description || '',
                     date:        meta.date        || '',
-                    file:        filePath
+                    file:        filePath,
+                    tags:        Array.isArray(meta.tags) ? meta.tags : []
                 });
             } catch (err) {
                 console.warn('[Posts] 解析失败:', filePath, err);
@@ -344,34 +499,13 @@ async function loadPosts() {
             return new Date(b.date) - new Date(a.date);
         });
 
-        container.innerHTML = posts.map(function (post) {
-            return [
-                '<article>',
-                '  <h3>',
-                '    <a class="post-link" data-file="' + escapeAttr(post.file) + '"',
-                '       data-title="' + escapeAttr(post.title) + '"',
-                '       role="button" tabindex="0">',
-                escapeHtml(post.title),
-                '    </a>',
-                '  </h3>',
-                '  <p>' + escapeHtml(post.description) + '</p>',
-                '  <span class="date">' + escapeHtml(post.date) + '</span>',
-                '</article>'
-            ].join('\n');
-        }).join('\n');
+        // Store globally for filtering
+        _allPosts = posts;
+        _activeTag = null;
 
-        // Attach open-article handlers to every post link
-        container.querySelectorAll('.post-link').forEach(function (link) {
-            link.addEventListener('click', function () {
-                openArticleView(link.dataset.file, link.dataset.title);
-            });
-            link.addEventListener('keydown', function (e) {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    openArticleView(link.dataset.file, link.dataset.title);
-                }
-            });
-        });
+        // Render both the post list and the tag filter sidebar
+        renderPostList(posts);
+        buildTagFilter();
 
     } catch (err) {
         console.error('[Posts] 加载失败:', err);
@@ -439,7 +573,7 @@ async function openArticleInternal(filePath, title) {
         const postMeta = _postCache.get(filePath);
         if (postMeta && postMeta.meta && Array.isArray(postMeta.meta.tags) && postMeta.meta.tags.length > 0) {
             articleTags.innerHTML = postMeta.meta.tags.map(function (tag) {
-                return '<span class="tag">' + escapeHtml(tag) + '</span>';
+                return '<span class="article-tag-item">#' + escapeHtml(tag) + '</span>';
             }).join('\n');
         }
 
