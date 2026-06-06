@@ -117,8 +117,8 @@ function switchTabInternal(tabName) {
 
     _currentTab = tabName;
 
-    // Scroll to top of content
-    document.querySelector('.content').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Scroll to absolute top of page
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 /**
@@ -454,8 +454,8 @@ async function openArticleInternal(filePath, title) {
         articleBody.innerHTML = html;
         articleBody.scrollTop = 0;
 
-        // Scroll article into view
-        articleView.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Scroll to absolute top of page
+        window.scrollTo({ top: 0, behavior: 'smooth' });
 
     } catch (err) {
         console.error('[Article] 加载文章失败:', err);
