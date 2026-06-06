@@ -436,6 +436,30 @@ footer {
     transition: color 0.25s ease;
 }
 
+/* Article tags */
+.article-tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.2rem;
+}
+
+.article-tags:empty {
+    display: none;
+}
+
+.tag {
+    display: inline-block;
+    background: var(--tag-bg);
+    color: var(--tag-text);
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.2rem 0.65rem;
+    border-radius: 4px;
+    letter-spacing: 0.4px;
+    transition: background 0.25s ease, color 0.25s ease;
+}
+
 .article-body {
     color: var(--text-secondary);
     font-size: 0.95rem;

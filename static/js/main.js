@@ -172,6 +172,7 @@ function hideArticleViewSilent() {
     articleView.style.display = 'none';
 
     document.getElementById('article-title').textContent = '';
+    document.getElementById('article-tags').innerHTML = '';
     document.getElementById('article-body').innerHTML = '';
 }
 
@@ -214,9 +215,29 @@ function parseFrontmatter(markdown) {
     const fmBlock = markdown.substring(4, end);
     body = markdown.substring(end + 4).trimStart();
 
-    fmBlock.split('\n').forEach(function (line) {
+    const lines = fmBlock.split('\n');
+    let currentListKey = null;
+    let currentList = [];
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Collect indented list items (e.g. "  - 技术")
+        const listMatch = line.match(/^\s+-\s+(.+)/);
+        if (listMatch && currentListKey) {
+            currentList.push(listMatch[1].trim());
+            continue;
+        }
+
+        // Flush any accumulated list before processing a new key
+        if (currentListKey) {
+            meta[currentListKey] = currentList;
+            currentListKey = null;
+            currentList = [];
+        }
+
         const colonIdx = line.indexOf(':');
-        if (colonIdx === -1) return;
+        if (colonIdx === -1) continue;
 
         const key = line.substring(0, colonIdx).trim();
         let value = line.substring(colonIdx + 1).trim();
@@ -226,10 +247,19 @@ function parseFrontmatter(markdown) {
             value = value.slice(1, -1);
         }
 
-        if (key) {
+        if (key && value) {
             meta[key] = value;
+        } else if (key && !value) {
+            // Potential YAML list — start collecting subsequent "  - item" lines
+            currentListKey = key;
+            currentList = [];
         }
-    });
+    }
+
+    // Flush the last list if present
+    if (currentListKey) {
+        meta[currentListKey] = currentList;
+    }
 
     return { meta: meta, body: body };
 }
@@ -347,6 +377,7 @@ async function loadPosts() {
 async function openArticleView(filePath, title, basePath) {
     const articleView  = document.getElementById('article-view');
     const articleTitle = document.getElementById('article-title');
+    const articleTags  = document.getElementById('article-tags');
     const articleBody  = document.getElementById('article-body');
 
     if (!articleView || !articleTitle || !articleBody) {
@@ -355,6 +386,7 @@ async function openArticleView(filePath, title, basePath) {
     }
 
     articleTitle.textContent = title || '文章';
+    articleTags.innerHTML = '';
     articleBody.innerHTML = '<p class="loading">加载中…</p>';
 
     showArticleView();
@@ -376,6 +408,14 @@ async function openArticleView(filePath, title, basePath) {
             const parsed = parseFrontmatter(raw);
             markdown = parsed.body;
             _postCache.set(filePath, parsed);
+        }
+
+        // Render tags if available
+        const postMeta = _postCache.get(filePath);
+        if (postMeta && postMeta.meta && Array.isArray(postMeta.meta.tags) && postMeta.meta.tags.length > 0) {
+            articleTags.innerHTML = postMeta.meta.tags.map(function (tag) {
+                return '<span class="tag">' + escapeHtml(tag) + '</span>';
+            }).join('\n');
         }
 
         /** @type {string} */
