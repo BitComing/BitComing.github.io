@@ -3,9 +3,10 @@
  *
  * Modules:
  *  1. Theme   — dark/light mode toggle with localStorage persistence
- *  2. Tabs    — top navigation tab switching
+ *  2. Tabs    — top navigation tab switching (with hash URL updates)
  *  3. Posts   — fetch manifest.json, parse YAML frontmatter from .md files
  *  4. Article — Markdown reading view with marked.js + cache
+ *  5. Router  — hash-based SPA routing (#/about, #/posts, #/contact, #/posts/file.md)
  */
 
 'use strict';
@@ -87,10 +88,10 @@ function bindThemeToggle() {
 let _currentTab = 'about';
 
 /**
- * Switches to the specified tab panel.
+ * Internal: switches to the specified tab panel without touching the URL.
  * @param {string} tabName  — 'about', 'posts', or 'contact'
  */
-function switchTab(tabName) {
+function switchTabInternal(tabName) {
     // Update tab buttons
     document.querySelectorAll('.tab').forEach(function (btn) {
         if (btn.dataset.tab === tabName) {
@@ -118,6 +119,21 @@ function switchTab(tabName) {
 
     // Scroll to top of content
     document.querySelector('.content').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/**
+ * Public: navigates to a tab, updating the URL hash.
+ * @param {string} tabName
+ */
+function switchTab(tabName) {
+    var targetHash = '#/' + tabName;
+    if (location.hash === targetHash) {
+        // Already on this hash — still update UI (initial load / direct call)
+        switchTabInternal(tabName);
+        return;
+    }
+    location.hash = targetHash;
+    // UI update will be triggered by hashchange → handleRoute()
 }
 
 /**
@@ -159,8 +175,8 @@ function showArticleView() {
  */
 function hideArticleView() {
     hideArticleViewSilent();
-    // Restore the previously active tab
-    switchTab(_currentTab);
+    // Restore the previously active tab (internal — no URL change needed here)
+    switchTabInternal(_currentTab);
 }
 
 /**
@@ -347,12 +363,12 @@ async function loadPosts() {
         // Attach open-article handlers to every post link
         container.querySelectorAll('.post-link').forEach(function (link) {
             link.addEventListener('click', function () {
-                openArticleView(link.dataset.file, link.dataset.title, basePath);
+                openArticleView(link.dataset.file, link.dataset.title);
             });
             link.addEventListener('keydown', function (e) {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
-                    openArticleView(link.dataset.file, link.dataset.title, basePath);
+                    openArticleView(link.dataset.file, link.dataset.title);
                 }
             });
         });
@@ -368,13 +384,12 @@ async function loadPosts() {
    =================================================== */
 
 /**
- * Fetches a Markdown file (or reads from cache), renders it with marked.js,
- * and displays it in the article view section.
+ * Internal: fetches a Markdown file (or reads from cache), renders it with marked.js,
+ * and displays it in the article view section — without touching the URL.
  * @param {string} filePath  Relative path to the .md file (e.g. "posts/react-learning.md")
- * @param {string} title     Article title to show
- * @param {string} basePath  Base URL prefix
+ * @param {string} [title]   Optional article title to show (fetched from cache if omitted)
  */
-async function openArticleView(filePath, title, basePath) {
+async function openArticleInternal(filePath, title) {
     const articleView  = document.getElementById('article-view');
     const articleTitle = document.getElementById('article-title');
     const articleTags  = document.getElementById('article-tags');
@@ -391,6 +406,8 @@ async function openArticleView(filePath, title, basePath) {
 
     showArticleView();
 
+    var basePath = getBasePath();
+
     try {
         /** @type {string} */
         let markdown = '';
@@ -398,16 +415,24 @@ async function openArticleView(filePath, title, basePath) {
         const cached = _postCache.get(filePath);
         if (cached && typeof cached.body === 'string' && cached.body.length > 0) {
             markdown = cached.body;
+            // Update title from cache if not provided
+            if (!title && cached.meta && cached.meta.title) {
+                articleTitle.textContent = cached.meta.title;
+            }
         } else {
             const url = basePath + filePath;
             const response = await fetch(url);
             if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
+                throw new Error('HTTP ' + response.status);
             }
             const raw = await response.text();
             const parsed = parseFrontmatter(raw);
             markdown = parsed.body;
             _postCache.set(filePath, parsed);
+            // Update title from parsed frontmatter
+            if (!title && parsed.meta && parsed.meta.title) {
+                articleTitle.textContent = parsed.meta.title;
+            }
         }
 
         // Render tags if available
@@ -439,6 +464,22 @@ async function openArticleView(filePath, title, basePath) {
 }
 
 /**
+ * Public: navigates to an article, updating the URL hash.
+ * @param {string} filePath  Relative path to the .md file (e.g. "posts/react-learning.md")
+ * @param {string} [title]   Optional article title
+ */
+function openArticleView(filePath, title) {
+    var targetHash = '#/' + filePath;
+    if (location.hash === targetHash) {
+        // Already on this hash — still update UI (initial load)
+        openArticleInternal(filePath, title);
+        return;
+    }
+    location.hash = targetHash;
+    // UI update will be triggered by hashchange → handleRoute()
+}
+
+/**
  * Binds the back button click handler to return to the posts tab.
  */
 function bindBackButton() {
@@ -446,9 +487,70 @@ function bindBackButton() {
     if (!backBtn) return;
 
     backBtn.addEventListener('click', function () {
-        hideArticleView();
+        // Navigate back to the posts list via hash
+        location.hash = '#/posts';
+        // hashchange → handleRoute() → switchTabInternal('posts')
     });
 }
+
+/* ===================================================
+   5. Router Module — hash-based SPA routing
+   =================================================== */
+
+/**
+ * Guard flag to prevent hashchange handler from re-entering
+ * while the UI is already being updated.
+ * @type {boolean}
+ */
+let _routing = false;
+
+/**
+ * Parses location.hash and dispatches to the correct UI function.
+ *
+ * Hash scheme:
+ *   ''  or '#/'  or '#/about'   → about tab
+ *   '#/posts'                   → posts tab
+ *   '#/contact'                 → contact tab
+ *   '#/posts/filename.md'       → article view
+ */
+function handleRoute() {
+    if (_routing) return;
+    _routing = true;
+
+    var hash = location.hash;
+
+    // Normalise: strip leading '#' and trailing slashes
+    if (hash.startsWith('#')) {
+        hash = hash.slice(1);
+    }
+
+    if (hash.startsWith('/posts/')) {
+        // Article route: /posts/filename.md
+        var filePath = hash.slice(1); // remove leading '/', gives "posts/xxx.md"
+        openArticleInternal(filePath).then(function () {
+            _routing = false;
+        }).catch(function () {
+            _routing = false;
+        });
+    } else if (hash === '/posts') {
+        switchTabInternal('posts');
+        _routing = false;
+    } else if (hash === '/contact') {
+        switchTabInternal('contact');
+        _routing = false;
+    } else {
+        // Default: about tab
+        switchTabInternal('about');
+        _routing = false;
+    }
+}
+
+/**
+ * Listen for browser back/forward and URL changes.
+ */
+window.addEventListener('hashchange', function () {
+    handleRoute();
+});
 
 /* ===================================================
    Escape helpers
@@ -492,9 +594,13 @@ document.addEventListener('DOMContentLoaded', function () {
     // 3. Wire up tab switching
     bindTabs();
 
-    // 4. Load & render post list
+    // 4. Load & render post list (always needed — post links must exist before routing)
     loadPosts();
 
     // 5. Wire back button handler
     bindBackButton();
+
+    // 6. Route to the initial URL (restore tab/article from hash, or default to about)
+    //    Posts may still be loading, but openArticleInternal will await the cache if needed.
+    handleRoute();
 });
