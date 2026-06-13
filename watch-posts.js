@@ -1,5 +1,5 @@
 /**
- * watch-posts.js — 监听 posts/ 目录下 .md 文件的增删，自动运行 gen-manifest.sh
+ * watch-posts.js — 监听 posts/ 目录下 .md 文件的增删，自动运行 gen-manifest.ps1
  *
  * 用法： node watch-posts.js
  * 停止： Ctrl+C
@@ -7,17 +7,20 @@
 
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
+const { execFileSync } = require('child_process');
 
 const POSTS_DIR = path.join(__dirname, 'posts');
-const SCRIPT = path.join(__dirname, 'gen-manifest.sh');
+const SCRIPT = path.join(__dirname, 'gen-manifest.ps1');
 
 // 防抖：批量变更在 300ms 内只触发一次
 let timer = null;
 
 function runManifest() {
   try {
-    const result = execSync(`bash "${SCRIPT}"`, { encoding: 'utf8', cwd: __dirname });
+    const result = execFileSync('pwsh', ['-File', SCRIPT], {
+      encoding: 'utf8',
+      cwd: __dirname,
+    });
     console.log(result.trim());
   } catch (err) {
     console.error('[watch-posts] 运行出错:', err.message);
