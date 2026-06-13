@@ -14,3 +14,7 @@ tags:
 ## Our Mission
 
 Our mission is to build the systems and technologies necessary to make life multiplanetary, to understand the true nature of the universe, and to extend the light of consciousness to the stars. To do this, we have formed the most ambitious, vertically integrated innovation engine on (and off) Earth with unmatched capabilities to rapidly manufacture and launch space-based communications that connect the world, to harness the Sun to power a truth-seeking artificial intelligence that advances scientific discovery, and ultimately to build a base on the Moon and cities on other planets.
+
+# Reference
+
+[^1]: https://www.sec.gov/Archives/edgar/data/1181412/000162828026036936/spaceexplorationtechnologi.htm#id286866c4c474ba490d6531a57db9e93_54
